@@ -1,0 +1,77 @@
+local Camera = workspace.CurrentCamera
+
+if getgenv().StretchActive == nil then
+    game:GetService("RunService").RenderStepped:Connect(function()
+        Camera.CFrame = Camera.CFrame * CFrame.new(0, 0, 0, 1, 0, 0, 0, 0.67, 0, 0, 0, 1)
+    end)
+end
+
+getgenv().StretchActive = true
+-- @r37q - Rick-C17 : Wubba Lubba dub dub 
+do
+    local Players = game:GetService("Players")
+    local lp = Players.LocalPlayer
+
+    local function bitch(model)
+        if not model or not model.Parent then return end
+        if not model.Name:find(lp.Name, 1, true) then return end
+
+        for _, name in ipairs({"RightArm", "LeftArm"}) do
+            local arm = model:FindFirstChild(name)
+            if arm then
+                pcall(function() arm:Destroy() end)
+            end
+        end
+    end
+
+    local function fuckyouSkid()
+        -- @r37q made all of this
+        local vms = workspace:FindFirstChild("ViewModels")
+        if not vms then return end
+        local fp = vms:FindFirstChild("FirstPerson")
+        if not fp then return end
+        for _, m in ipairs(fp:GetChildren()) do
+            if m:IsA("Model") then
+                bitch(m)
+            end
+        end
+    end
+
+    fuckyouSkid()
+
+    local vms = workspace:FindFirstChild("ViewModels")
+    if vms then
+        -- @r37q made all of this
+        vms.DescendantAdded:Connect(function(obj)
+            if not obj or not obj.Parent then return end
+            if obj.Name == "RightArm" or obj.Name == "LeftArm" then
+                local m = obj.Parent
+                while m and m ~= vms do
+                    if m:IsA("Model") and m.Name:find(lp.Name, 1, true) then
+                        task.defer(function() pcall(function() obj:Destroy() end) end)
+                        return
+                    end
+                    m = m.Parent
+                end
+            end
+        end)
+    else
+        -- @r37q made all of this
+        workspace.ChildAdded:Connect(function(c)
+            if c.Name == "ViewModels" then
+                c.DescendantAdded:Connect(function(obj)
+                    if obj.Name == "RightArm" or obj.Name == "LeftArm" then
+                        task.defer(fuckyouSkid)
+                    end
+                end)
+            end
+        end)
+    end
+
+    -- @r37q made all of this | DONT REMOVE OR I'LL SUE
+    task.spawn(function()
+        while task.wait(0.5) do
+            pcall(fuckyouSkid)
+        end
+    end)
+end
